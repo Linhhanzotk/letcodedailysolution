@@ -1,30 +1,29 @@
 class Solution:
     def possibleStringCount(self, word: str, k: int) -> int:
-        a=[]
-        cnt=1
+        cnt=0
         total=1
+        a=[]
         mod=10**9+7
         for i in range(1, len(word)):
-            if word[i]==word[i-1]:
-                cnt+=1
+            if word[i]==word[i-1]: cnt+=1
             else:
-                a.append(cnt)
-                total=(total*cnt)%mod
-                cnt=1
-        total=(total*cnt)%mod
-        a.append(cnt)
-        if k<=len(a): return total
-        print (total)
-        f=[0]*(k+1)
-        f[1]=1
-        for i in range(len(a)):
-            cur=[0]*(k+1)
-            for j in range(1, k):
-                f[j]=(f[j]+f[j-1])%mod
-                if j>i:
-                    low=max(i, j-a[i])
-                    cur[j+1]=(f[j]-f[low]+mod)%mod
-            f=cur
-        invalid=0
-        for i in f: invalid+=i
-        return (total-invalid+mod)%mod
+                if cnt>0:
+                    total=(total*(cnt+1))%mod
+                    a.append(cnt)
+                    cnt=0
+                k-=1
+        if cnt>0:
+            total=(total*(cnt+1))%mod
+            a.append(cnt)
+            cnt=0
+        k-=2
+        if k<0: return total
+        f=[1]*(k+2)
+        f[0]=0
+        for i in a:
+            for j in range (k, 0, -1):
+                low=max(j-i, 0)
+                f[j+1]=(f[j+1]-f[low]+mod)%mod
+            for j in range(k+1):
+                f[j+1]=(f[j+1]+f[j])%mod
+        return (total-f[k+1]+mod)%mod
